@@ -974,8 +974,16 @@ Napi::Object Bootstrap(const Napi::CallbackInfo& info)
     }
     std::string resourcePath = info[0].As<Napi::String>().Utf8Value();
     MainThreadShared::resourcePath = resourcePath;
+    if (info.Length() > 2 && info[2].IsString()) {
+        NetworkSettings::slurperBaseUrl = info[2].As<Napi::String>().Utf8Value();
+        PLOGI << "Using slurper base URL: " << NetworkSettings::slurperBaseUrl;
+    } else {
+        NetworkSettings::slurperBaseUrl = DEFAULT_SLURPER_BASE_URL;
+    }
+
     if (info.Length() > 1 && info[1].IsString()) {
         std::string request = info[1].As<Napi::String>().Utf8Value();
+        PLOGI << "Using AFV API URL override: " << request;
         mClient = std::make_unique<afv_native::api::atcClient>(CLIENT_NAME, resourcePath, request);
     } else {
         mClient = std::make_unique<afv_native::api::atcClient>(CLIENT_NAME, resourcePath);

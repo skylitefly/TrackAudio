@@ -12,7 +12,7 @@
 
 // Constants
 #define TIMER_CALLBACK_INTERVAL_SEC 15
-#define SLURPER_BASE_URL "https://slurper.vatsim.net"
+#define DEFAULT_SLURPER_BASE_URL "https://slurper.vatsim.net"
 #define SLURPER_DATA_ENDPOINT "/users/info/"
 #define VERSION_CHECK_BASE_URL "https://raw.githubusercontent.com"
 #define VERSION_CHECK_ENDPOINT "/pierr3/TrackAudio/main/MANDATORY_VERSION"
@@ -58,6 +58,11 @@ public:
 struct RemoteDataStatus {
 public:
     static bool isSlurperAvailable;
+};
+
+struct NetworkSettings {
+public:
+    static std::string slurperBaseUrl;
 };
 
 struct UserSettings {

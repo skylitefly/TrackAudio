@@ -7,6 +7,9 @@ import { AlwaysOnTopMode, Configuration, RadioEffects } from '../shared/config.t
 // increased any time the Configuration object has a breaking change.
 export const currentSettingsVersion = 4;
 
+export const defaultAfvApiUrl = 'https://voice1.vatsim.net';
+export const defaultSlurperBaseUrl = 'https://slurper.vatsim.net';
+
 // Default application configuration. Used as a fallback when any of the properties
 // are missing from the saved configuration.
 export const defaultConfiguration = {
@@ -30,7 +33,9 @@ export const defaultConfiguration = {
   loopbackTarget: 0,
   loopbackGain: 50,
   microphoneGain: 100,
-  updateChannel: 'stable'
+  updateChannel: 'stable',
+  afvApiUrl: defaultAfvApiUrl,
+  slurperBaseUrl: defaultSlurperBaseUrl
 };
 
 class ConfigManager {

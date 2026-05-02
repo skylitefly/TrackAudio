@@ -17,7 +17,7 @@ import icon from '../../resources/AppIcon/icon.png?asset';
 import updater from 'electron-updater';
 import log from 'electron-log/main';
 import { ENV } from './env';
-import configManager from './config';
+import configManager, { defaultAfvApiUrl, defaultSlurperBaseUrl } from './config';
 import { AlwaysOnTopMode, RadioEffects } from '../shared/config.type';
 import { MainVolumeChange } from '../shared/MainVolumeChange';
 
@@ -42,6 +42,11 @@ const store = new Store({ clearInvalidConfig: true });
 configManager.setStore(store);
 
 const eventQueue: [string, string, string, string][] = [];
+
+const normalizeServerUrl = (url: string, fallback: string) => {
+  const trimmedUrl = url.trim();
+  return trimmedUrl === '' ? fallback : trimmedUrl.replace(/\/+$/, '');
+};
 
 /**
  * Sets the always on top state for the main window, with different
@@ -372,14 +377,20 @@ app
 
     const _v = (i: string) => Buffer.from(i, 'base64').toString('utf8');
 
-    if (ENV[_v('VklURV9BRlZfVVJM')]) {
-      bootstrapOutput = TrackAudioAfv.Bootstrap(
-        process.resourcesPath,
-        ENV[_v('VklURV9BRlZfVVJM')] as string
-      );
-    } else {
-      bootstrapOutput = TrackAudioAfv.Bootstrap(process.resourcesPath);
-    }
+    const configuredAfvApiUrl = normalizeServerUrl(
+      (ENV[_v('VklURV9BRlZfVVJM')] as string) || configManager.config.afvApiUrl || '',
+      defaultAfvApiUrl
+    );
+    const configuredSlurperBaseUrl = normalizeServerUrl(
+      configManager.config.slurperBaseUrl || '',
+      defaultSlurperBaseUrl
+    );
+
+    bootstrapOutput = TrackAudioAfv.Bootstrap(
+      process.resourcesPath,
+      configuredAfvApiUrl,
+      configuredSlurperBaseUrl
+    );
 
     if (bootstrapOutput.needUpdate) {
       dialog.showMessageBoxSync({
@@ -599,6 +610,18 @@ ipcMain.handle('set-cid', (_, cid: string) => {
 
 ipcMain.handle('set-password', (_, password: string) => {
   configManager.updateConfig({ password });
+});
+
+ipcMain.handle('set-afv-api-url', (_, afvApiUrl: string) => {
+  configManager.updateConfig({
+    afvApiUrl: normalizeServerUrl(afvApiUrl, defaultAfvApiUrl)
+  });
+});
+
+ipcMain.handle('set-slurper-base-url', (_, slurperBaseUrl: string) => {
+  configManager.updateConfig({
+    slurperBaseUrl: normalizeServerUrl(slurperBaseUrl, defaultSlurperBaseUrl)
+  });
 });
 
 //

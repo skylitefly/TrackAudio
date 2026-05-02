@@ -43,6 +43,7 @@
   - [Can I add a frequency manually if it does not exist in the database?](#can-i-add-a-frequency-manually-if-it-does-not-exist-in-the-database)
   - [What is XC and XCA?](#what-is-xc-and-xca)
   - [Can I extend TrackAudio using a plugin/is there an SDK?](#can-i-extend-trackaudio-using-a-pluginis-there-an-sdk)
+  - [Can I use a custom AFV server?](#can-i-use-a-custom-afv-server)
   - [Ports and endpoints access required for TrackAudio](#ports-and-endpoints-access-required-for-trackaudio)
   - [How to enable verbose logging (advanced)](#how-to-enable-verbose-logging-advanced)
   - [Before opening an issue](#before-opening-an-issue)
@@ -113,6 +114,14 @@ This feature is mostly useful for CTR positions, when regrouping large sectors t
 ### Can I extend TrackAudio using a plugin/is there an SDK?
 
 Yes! Have a look [in the wiki](https://github.com/pierr3/TrackAudio/wiki/SDK-documentation). TrackAudio offers a WebSocket and HTTP SDK. If you need additional features, please open an issue with a detailed request, I'll be happy to look at it with no guarantees.
+
+### Can I use a custom AFV server?
+
+Yes. Open Settings > Network and change the AFV API URL and Slurper URL.
+
+The default AFV API URL is `https://voice1.vatsim.net`. The default Slurper URL is `https://slurper.vatsim.net`.
+
+Changing these URLs requires restarting TrackAudio before the new endpoints are used.
 
 ### Ports and endpoints access required for TrackAudio
 

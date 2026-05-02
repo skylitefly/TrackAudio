@@ -65,7 +65,7 @@ std::string RemoteData::getSlurperData(const std::string& cid)
         return "";
     }
 
-    httplib::Client slurperCli(SLURPER_BASE_URL);
+    httplib::Client slurperCli(NetworkSettings::slurperBaseUrl);
     slurperCli.set_follow_location(true);
     slurperCli.set_connection_timeout(10);
     slurperCli.set_read_timeout(10);
@@ -264,7 +264,7 @@ void RemoteData::notifyUserOfSlurperUnavalability()
     }
 
     NapiHelpers::sendErrorToElectron("Error while parsing slurper data, check the log file. "
-                                     "This means your internet may be down or the VATSIM servers "
+                                     "This means your internet may be down or the configured network servers "
                                      "may experience an outage. You will not be able to connect "
                                      "until this is resolved. TrackAudio will keep retrying in the "
                                      "background.");

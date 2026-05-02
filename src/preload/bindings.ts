@@ -73,6 +73,9 @@ export const api = {
   disconnect: () => ipcRenderer.invoke('disconnect'),
   setCid: (cid: string) => ipcRenderer.invoke('set-cid', cid),
   setPassword: (password: string) => ipcRenderer.invoke('set-password', password),
+  setAfvApiUrl: (afvApiUrl: string) => ipcRenderer.invoke('set-afv-api-url', afvApiUrl),
+  setSlurperBaseUrl: (slurperBaseUrl: string) =>
+    ipcRenderer.invoke('set-slurper-base-url', slurperBaseUrl),
 
   GetStation: (callsign: string) => ipcRenderer.invoke('get-station', callsign),
   RefreshStation: (callsign: string) => ipcRenderer.invoke('refresh-station', callsign),

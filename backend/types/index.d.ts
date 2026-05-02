@@ -128,7 +128,7 @@ declare namespace TrackAudioAfv {
   export function RequestPttKeyName(pttIndex: number): void;
 
   export function IsConnected(): boolean;
-  export function Bootstrap(resourcePath: string, request?: string): {
+  export function Bootstrap(resourcePath: string, request?: string, slurperBaseUrl?: string): {
     canRun: boolean;
     needUpdate: boolean;
     version: string;

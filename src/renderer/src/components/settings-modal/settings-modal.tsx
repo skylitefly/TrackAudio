@@ -38,6 +38,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ closeModal }) => {
   const [microphoneGain, setMicrophoneGain] = useState(100);
   const [cid, setCid] = useState('');
   const [password, setPassword] = useState('');
+  const [afvApiUrl, setAfvApiUrl] = useState('');
+  const [slurperBaseUrl, setSlurperBaseUrl] = useState('');
 
   const [pttIsOn] = useRadioState((state) => [state.pttIsOn]);
 
@@ -104,6 +106,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ closeModal }) => {
         setLoopbackGain(config.loopbackGain);
         setMicrophoneGain(config.microphoneGain);
         setUpdateChannel(config.updateChannel);
+        setAfvApiUrl(config.afvApiUrl);
+        setSlurperBaseUrl(config.slurperBaseUrl);
       })
       .catch((err: unknown) => {
         console.error(err);
@@ -156,6 +160,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ closeModal }) => {
     void window.api.setPassword(password);
     setChangesSaved(SaveStatus.Saved);
   }, 1000);
+
+  const debouncedAfvApiUrl = useDebouncedCallback((afvApiUrl: string) => {
+    setChangesSaved(SaveStatus.Saving);
+    setAfvApiUrl(afvApiUrl);
+    setConfig({ ...config, afvApiUrl });
+    void window.api.setAfvApiUrl(afvApiUrl);
+    setPendingRestart(true);
+    setChangesSaved(SaveStatus.Saved);
+  }, 500);
+
+  const debouncedSlurperBaseUrl = useDebouncedCallback((slurperBaseUrl: string) => {
+    setChangesSaved(SaveStatus.Saving);
+    setSlurperBaseUrl(slurperBaseUrl);
+    setConfig({ ...config, slurperBaseUrl });
+    void window.api.setSlurperBaseUrl(slurperBaseUrl);
+    setPendingRestart(true);
+    setChangesSaved(SaveStatus.Saved);
+  }, 500);
 
   const changeAudioApi = (api: number) => {
     setChangesSaved(SaveStatus.Saving);
@@ -425,6 +447,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ closeModal }) => {
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="general">General</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="network">Network</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
                     <Nav.Link eventKey="account">Account</Nav.Link>
@@ -706,6 +731,30 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ closeModal }) => {
                           </select>
                         </>
                       )}
+                    </div>
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="network">
+                    <div className="form-group">
+                      <label className="mt-1">AFV API URL</label>
+                      <input
+                        className="form-control mt-1"
+                        value={afvApiUrl}
+                        onChange={(e) => {
+                          setAfvApiUrl(e.target.value);
+                          debouncedAfvApiUrl(e.target.value);
+                        }}
+                      />
+
+                      <label className="mt-2">Slurper URL</label>
+                      <input
+                        className="form-control mt-1"
+                        value={slurperBaseUrl}
+                        onChange={(e) => {
+                          setSlurperBaseUrl(e.target.value);
+                          debouncedSlurperBaseUrl(e.target.value);
+                        }}
+                      />
                     </div>
                   </Tab.Pane>
 
