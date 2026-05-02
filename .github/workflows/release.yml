@@ -200,7 +200,7 @@ jobs:
       - id: relinfo
         uses: pozetroninc/github-action-get-latest-release@master
         with:
-          repository: pierr3/TrackAudio
+          repository: skylitefly/TrackAudio
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts

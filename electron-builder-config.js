@@ -1,12 +1,12 @@
 module.exports = {
-  appId: 'com.vatsim.trackaudio',
+  appId: 'com.skylitefly.trackaudio',
   productName: 'TrackAudio',
   directories: {
     buildResources: 'build'
   },
   publish: {
     provider: 'github',
-    owner: 'pierr3',
+    owner: 'skylitefly',
     repo: 'TrackAudio',
     releaseType: 'draft',
     vPrefixedTagName: false
