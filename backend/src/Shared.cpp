@@ -27,6 +27,7 @@ std::mutex UserSession::mtx;
 bool RemoteDataStatus::isSlurperAvailable = false;
 
 std::string NetworkSettings::slurperBaseUrl = DEFAULT_SLURPER_BASE_URL;
+std::string NetworkSettings::slurperPathPrefix;
 
 int UserSettings::configVersion = 0;
 int UserSettings::PttKey1 = -1;

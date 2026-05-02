@@ -69,7 +69,8 @@ std::string RemoteData::getSlurperData(const std::string& cid)
     slurperCli.set_follow_location(true);
     slurperCli.set_connection_timeout(10);
     slurperCli.set_read_timeout(10);
-    auto res = slurperCli.Get(SLURPER_DATA_ENDPOINT + std::string("?cid=") + cid);
+    auto res = slurperCli.Get(
+        NetworkSettings::slurperPathPrefix + SLURPER_DATA_ENDPOINT + std::string("?cid=") + cid);
 
     if (!res) {
         // Notify the client the slurper is offline

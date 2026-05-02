@@ -975,10 +975,25 @@ Napi::Object Bootstrap(const Napi::CallbackInfo& info)
     std::string resourcePath = info[0].As<Napi::String>().Utf8Value();
     MainThreadShared::resourcePath = resourcePath;
     if (info.Length() > 2 && info[2].IsString()) {
-        NetworkSettings::slurperBaseUrl = info[2].As<Napi::String>().Utf8Value();
+        std::string slurperUrl = info[2].As<Napi::String>().Utf8Value();
+        NetworkSettings::slurperPathPrefix = "";
+        auto schemeEnd = slurperUrl.find("://");
+        auto pathStart = schemeEnd == std::string::npos
+            ? slurperUrl.find('/')
+            : slurperUrl.find('/', schemeEnd + 3);
+        if (pathStart != std::string::npos) {
+            NetworkSettings::slurperBaseUrl = slurperUrl.substr(0, pathStart);
+            NetworkSettings::slurperPathPrefix = slurperUrl.substr(pathStart);
+        } else {
+            NetworkSettings::slurperBaseUrl = slurperUrl;
+        }
         PLOGI << "Using slurper base URL: " << NetworkSettings::slurperBaseUrl;
+        if (!NetworkSettings::slurperPathPrefix.empty()) {
+            PLOGI << "Using slurper path prefix: " << NetworkSettings::slurperPathPrefix;
+        }
     } else {
         NetworkSettings::slurperBaseUrl = DEFAULT_SLURPER_BASE_URL;
+        NetworkSettings::slurperPathPrefix = "";
     }
 
     if (info.Length() > 1 && info[1].IsString()) {

@@ -63,6 +63,7 @@ public:
 struct NetworkSettings {
 public:
     static std::string slurperBaseUrl;
+    static std::string slurperPathPrefix;
 };
 
 struct UserSettings {
