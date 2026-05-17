@@ -45,8 +45,9 @@ module.exports = {
     include: 'build/installer.nsh'
   },
   mac: {
+    identity: null,
     entitlementsInherit: 'build/entitlements.mac.plist',
-    notarize: true,
+    notarize: false,
     extraFiles: [
       {
         from: 'resources/',

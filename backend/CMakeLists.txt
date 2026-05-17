@@ -26,7 +26,11 @@ if(WIN32)
       $<$<CONFIG:Release>:/MD>
     )
     add_definitions(-D_WIN32_WINNT=0x0A00)
-    set(VCPKG_TARGET_TRIPLET "x64-windows")
+    if(CMAKE_GENERATOR_PLATFORM MATCHES "ARM64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64|aarch64")
+      set(VCPKG_TARGET_TRIPLET "arm64-windows")
+    else()
+      set(VCPKG_TARGET_TRIPLET "x64-windows")
+    endif()
 endif()
 
 if(WIN32)

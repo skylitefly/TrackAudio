@@ -7,6 +7,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     environment: Release
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     strategy:
       fail-fast: false
       matrix:
@@ -14,8 +16,6 @@ jobs:
         arch: [x64, arm64]
         node-version: [22.x]
         exclude:
-          - os: windows-2022
-            arch: arm64
           - os: ubuntu-latest
             arch: arm64
 
@@ -62,13 +62,6 @@ jobs:
         run: |
           brew update
           brew install utf8proc
-
-      - name: Installing codesign certificates
-        if: matrix.os == 'macos-latest'
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.APPLE_CERT_DATA }}
-          p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}
 
       - name: Install SFML native dependencies
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
@@ -129,6 +122,21 @@ jobs:
           pnpm install --force ./backend/trackaudio-afv-1.0.0.tgz
           pnpm install
 
+      - name: Install dependencies and building backend (Windows arm64)
+        if: matrix.arch == 'arm64' && matrix.os == 'windows-2022'
+        shell: bash
+        run: |
+          set -e
+          pnpm add -g cmake-js
+          cd backend/
+          npm install
+          cmake-js compile -B Release -a arm64
+          node custom_build.mjs
+          npm pack
+          cd ..
+          pnpm install --force ./backend/trackaudio-afv-1.0.0.tgz
+          pnpm install
+
       - name: Install dependencies and building backend (linux arm64 cross compile)
         if: matrix.arch == 'arm64' && matrix.os == 'ubuntu-latest'
         shell: bash
@@ -151,36 +159,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install notarization tools
-        if: matrix.os == 'macos-latest'
-        run: |
-          cat << EOF > ./.a.p8
-          ${{ secrets.APPLE_API_KEY }}
-          EOF
-
       - name: Package app
         if: matrix.os == 'macos-latest' && matrix.arch == 'x64'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_API_KEY: './.a.p8'
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        run: |
-          pnpm run build:mac:x64 -- --publish=never
-          rm ./.a.p8
+        run: pnpm run build:mac:x64 -- --publish=never
 
       - name: Package app
         if: matrix.os == 'macos-latest' && matrix.arch == 'arm64'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_API_KEY: './.a.p8'
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-        run: |
-          pnpm run build:mac -- --publish=never
-          rm ./.a.p8
+        run: pnpm run build:mac -- --publish=never
 
       - name: Package app
         if: matrix.os == 'ubuntu-latest'
