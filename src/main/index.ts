@@ -368,13 +368,6 @@ app
     // Auto-show the settings dialog if the audioApi is the default value.
     autoOpenSettings = configManager.config.audioApi === -1;
 
-    let bootstrapOutput: {
-      checkSuccessful: boolean;
-      needUpdate: boolean;
-      version: string;
-      canRun: boolean;
-    };
-
     const _v = (i: string) => Buffer.from(i, 'base64').toString('utf8');
 
     const configuredAfvApiUrl = normalizeServerUrl(
@@ -386,7 +379,12 @@ app
       defaultSlurperBaseUrl
     );
 
-    bootstrapOutput = TrackAudioAfv.Bootstrap(
+    const bootstrapOutput: {
+      checkSuccessful: boolean;
+      needUpdate: boolean;
+      version: string;
+      canRun: boolean;
+    } = TrackAudioAfv.Bootstrap(
       process.resourcesPath,
       configuredAfvApiUrl,
       configuredSlurperBaseUrl
