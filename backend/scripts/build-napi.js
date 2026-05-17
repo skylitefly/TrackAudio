@@ -28,7 +28,7 @@ async function build() {
 
   try {
     // Construct cmake-js command
-    const cmakeJsCommand = ['cmake-js'];
+    const cmakeJsCommand = ['npx', '--yes', 'cmake-js'];
     if (isWindows) {
       cmakeJsCommand.push('-G', 'Ninja');
     }

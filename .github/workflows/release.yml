@@ -98,10 +98,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          pnpm add -g cmake-js
           cd backend/
           npm install
-          cmake-js compile -B Release -a x64
+          npx --yes cmake-js compile -B Release -a x64
           node custom_build.mjs
           npm pack
           cd ..
@@ -112,10 +111,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          pnpm add -g cmake-js
           cd backend/
           npm install
-          cmake-js compile -B Release -a arm64
+          npx --yes cmake-js compile -B Release -a arm64
           node custom_build.mjs
           npm pack
           cd ..
@@ -127,10 +125,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          pnpm add -g cmake-js
           cd backend/
           npm install
-          cmake-js compile -B Release -a arm64
+          npx --yes cmake-js compile -B Release -a arm64
           node custom_build.mjs
           npm pack
           cd ..
@@ -142,10 +139,9 @@ jobs:
         shell: bash
         run: |
           set -e
-          pnpm add -g cmake-js
           cd backend/
           pnpm install
-          cmake-js compile -B Release -a arm64 --prefer-clang false --CD -DVCPKG_TARGET_TRIPLET=arm64-linux
+          npx --yes cmake-js compile -B Release -a arm64 --prefer-clang false --CD -DVCPKG_TARGET_TRIPLET=arm64-linux
           node custom_build.mjs
           pnpm pack
           cd ..
