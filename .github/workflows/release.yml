@@ -140,10 +140,10 @@ jobs:
         run: |
           set -e
           cd backend/
-          pnpm install
+          npm install
           npx --yes cmake-js compile -B Release -a arm64 --prefer-clang false --CD -DVCPKG_TARGET_TRIPLET=arm64-linux
           node custom_build.mjs
-          pnpm pack
+          npm pack
           cd ..
           pnpm install --force ./backend/trackaudio-afv-1.0.0.tgz
           pnpm install
