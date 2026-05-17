@@ -89,7 +89,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          pnpm run build:backend
+          npm run build:backend
           pnpm install
 
       - name: Run eslint
