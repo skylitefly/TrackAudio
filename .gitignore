@@ -133,3 +133,6 @@ build/vcpkg_installed
 build/.cmake
 build/CMakeFiles
 build/CMakeCache.txt
+
+# JetBrains IDEs
+.idea/
