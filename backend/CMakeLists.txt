@@ -39,6 +39,22 @@ if(WIN32)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /DELAYLOAD:node.exe /INCREMENTAL:NO")
 endif()
 
+if(WIN32 AND NOT CMAKE_RC_COMPILER AND DEFINED ENV{WindowsSdkVerBinPath})
+  if(NODE_ARCH STREQUAL "arm64")
+    set(_ta_rc_arch "arm64")
+  else()
+    set(_ta_rc_arch "x64")
+  endif()
+  get_filename_component(_ta_sdk_bin "$ENV{WindowsSdkVerBinPath}" ABSOLUTE)
+  set(_ta_rc_candidate "${_ta_sdk_bin}/${_ta_rc_arch}/rc.exe")
+  if(EXISTS "${_ta_rc_candidate}")
+    set(CMAKE_RC_COMPILER "${_ta_rc_candidate}" CACHE FILEPATH "RC compiler")
+  endif()
+  unset(_ta_rc_arch)
+  unset(_ta_sdk_bin)
+  unset(_ta_rc_candidate)
+endif()
+
 project(trackaudio-afv)
 
 # Set the C++ standard to C++17

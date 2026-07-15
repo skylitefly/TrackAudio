@@ -130,9 +130,7 @@ declare namespace TrackAudioAfv {
   export function IsConnected(): boolean;
   export function Bootstrap(resourcePath: string, request?: string, slurperBaseUrl?: string): {
     canRun: boolean;
-    needUpdate: boolean;
     version: string;
-    checkSuccessful: boolean;
   };
 
   export function GetLoggerFilePath(): string;

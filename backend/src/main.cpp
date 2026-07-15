@@ -11,13 +11,11 @@
 #include <cctype>
 #include <chrono>
 #include <cstddef>
-#include <httplib.h>
 #include <memory>
 #include <napi.h>
 #include <optional>
 #include <plog/Log.h>
 #include <sago/platform_folders.h>
-#include <semver.hpp>
 #include <string>
 #include <thread>
 
@@ -34,8 +32,6 @@ struct MainThreadShared {
 public:
     inline static std::unique_ptr<RemoteData> mRemoteDataHandler = nullptr;
     inline static std::shared_ptr<SDK> mApiServer = nullptr;
-
-    inline static bool ShouldRun = true;
 
     inline static std::unique_ptr<std::thread> vuMeterThread = nullptr;
     inline static std::atomic_bool runVuMeterCallback = false;
@@ -106,10 +102,6 @@ Napi::Array GetAudioOutputDevices(const Napi::CallbackInfo& info)
 
 Napi::Boolean Connect(const Napi::CallbackInfo& info)
 {
-    if (!MainThreadShared::ShouldRun) {
-        return Napi::Boolean::New(info.Env(), false);
-    }
-
     Napi::Env env = info.Env();
 
     if (!mClient || !UserSession::isConnectedToTheNetwork) {
@@ -888,56 +880,6 @@ Napi::String GetStateFolderNapi(const Napi::CallbackInfo& info)
     return Napi::String::New(info.Env(), FileSystem::GetStateFolderPath().string());
 }
 
-struct VersionCheckResponse {
-    VersionCheckResponse(bool succeded, bool update)
-        : success(succeded)
-        , needUpdate(update)
-    {
-    }
-    bool success = false;
-    bool needUpdate = false;
-};
-
-VersionCheckResponse CheckVersionSync()
-{
-    // We force do a mandatory version check, if an update is needed, the
-    // programme won't run
-
-    try {
-        httplib::Client client(VERSION_CHECK_BASE_URL);
-        client.set_connection_timeout(10);
-        client.set_read_timeout(10);
-        auto res = client.Get(VERSION_CHECK_ENDPOINT);
-        if (!res || res->status != httplib::StatusCode::OK_200) {
-            std::string errorDetail;
-            if (res) {
-                errorDetail = "HTTP error " + std::to_string(res->status);
-            } else {
-                errorDetail = "Unable to reach server at all or no internet connection";
-            }
-            PLOGE << "Error fetching version: " << errorDetail;
-            MainThreadShared::ShouldRun = false;
-            return { false, false };
-        }
-
-        std::string cleanBody = res->body;
-        absl::StripAsciiWhitespace(&cleanBody);
-        auto mandatoryVersion = semver::version(cleanBody);
-        if (VERSION < mandatoryVersion) {
-            MainThreadShared::ShouldRun = false;
-            PLOGE << "Mandatory update required: " << VERSION.to_string() << " -> "
-                  << mandatoryVersion.to_string();
-            return { true, true };
-        }
-    } catch (const std::exception& e) {
-        MainThreadShared::ShouldRun = false;
-        PLOGE << "Error parsing version: " << e.what();
-        return { false, false };
-    }
-
-    return { true, false };
-}
-
 Napi::Object Bootstrap(const Napi::CallbackInfo& info)
 {
     LogFactory::createLoggers();
@@ -946,28 +888,6 @@ Napi::Object Bootstrap(const Napi::CallbackInfo& info)
 
     outObject["version"] = Napi::String::New(info.Env(), VERSION.to_string());
     outObject["canRun"] = Napi::Boolean::New(info.Env(), true);
-    outObject["needUpdate"] = Napi::Boolean::New(info.Env(), false);
-    outObject["checkSuccessful"] = Napi::Boolean::New(info.Env(), true);
-
-    PLOGI << "Checking version...";
-    const auto versionCheckResponse = CheckVersionSync();
-    PLOGI << "Version check response obtained, verifying...";
-
-    if (!versionCheckResponse.success) {
-        outObject["canRun"] = Napi::Boolean::New(info.Env(), false);
-        outObject["checkSuccessful"] = Napi::Boolean::New(info.Env(), versionCheckResponse.success);
-        PLOGE << "Version check failed, cannot run TrackAudio";
-        return outObject;
-    }
-
-    if (versionCheckResponse.needUpdate) {
-        outObject["needUpdate"] = Napi::Boolean::New(info.Env(), true);
-        outObject["canRun"] = Napi::Boolean::New(info.Env(), false);
-        PLOGE << "Mandatory update required, cannot run TrackAudio";
-        return outObject;
-    }
-
-    PLOGI << "Version check successful, continuing...";
 
     if (info.Length() < 1 || !info[0].IsString()) {
         throw Napi::Error::New(info.Env(), "Resource path is required");

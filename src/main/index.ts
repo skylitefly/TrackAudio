@@ -380,8 +380,6 @@ app
     );
 
     const bootstrapOutput: {
-      checkSuccessful: boolean;
-      needUpdate: boolean;
       version: string;
       canRun: boolean;
     } = TrackAudioAfv.Bootstrap(
@@ -390,19 +388,10 @@ app
       configuredSlurperBaseUrl
     );
 
-    if (bootstrapOutput.needUpdate) {
-      dialog.showMessageBoxSync({
-        type: 'error',
-        message: 'A new mandatory version is available, please update in order to continue.',
-        buttons: ['OK']
-      });
-      app.quit();
-    }
-
     if (!bootstrapOutput.canRun) {
       dialog.showMessageBoxSync({
         type: 'error',
-        message: 'This application cannot run on this platform.',
+        message: 'TrackAudio failed to initialize. Please check trackaudio.log for details.',
         buttons: ['OK']
       });
       app.quit();

@@ -17,7 +17,7 @@ module.exports = {
     '!electron.vite.config.{js,ts,mjs,cjs}',
     '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}',
     '!{.env,.env.*,.npmrc,pnpm-lock.yaml}',
-    '!{.gitignore,.gitmodules,.sentryclirc,MANDATORY_VERSION}',
+    '!{.gitignore,.gitmodules,.sentryclirc}',
     '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}',
     '!backend/*'
   ],
